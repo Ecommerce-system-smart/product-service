@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.ecommerce"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0"
 description = "Demo project for Spring Boot"
 
 java {
@@ -41,7 +41,7 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("com.ecommerce:common:1.0.0")
+	implementation ("com.ecommerce:common:1.0.0")
 	implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 	// Thư viện giúp Spring Boot nói chuyện với Prometheus
 	implementation("io.micrometer:micrometer-registry-prometheus")

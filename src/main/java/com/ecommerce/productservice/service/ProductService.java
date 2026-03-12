@@ -55,7 +55,7 @@ public class ProductService {
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
-                .skuCode(product.getSkuCode()) // Không bao giờ quên được
+                .skuCode(product.getSkuCode())
                 .price(product.getPrice())
                 .stockQuantity(product.getStockQuantity())
                 .build();

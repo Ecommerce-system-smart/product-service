@@ -21,14 +21,15 @@ import com.ecommerce.productservice.utils.EncryptionUtil;
 public class ProductApi {
 
     private final ProductService productService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/create-product")
     public ResponseEntity<Map<String, String>> createProduct(@RequestBody Map<String, String> request) {
         try {
             String decrypted = EncryptionUtil.decrypt(request.get("payload"));
-            Product product = new ObjectMapper().readValue(decrypted, Product.class);
+            Product product = objectMapper.readValue(decrypted, Product.class);
             productService.createProduct(product);
-            String successMsg = new ObjectMapper().writeValueAsString(Collections.singletonMap("message", "Product created successfully"));
+            String successMsg = objectMapper.writeValueAsString(Collections.singletonMap("message", "Product created successfully"));
             return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("payload", EncryptionUtil.encrypt(successMsg)));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
@@ -39,7 +40,7 @@ public class ProductApi {
     public ResponseEntity<Map<String, String>> getAllProducts() {
         try {
             List<Product> products = productService.getAllProducts();
-            String json = new ObjectMapper().writeValueAsString(products);
+            String json = objectMapper.writeValueAsString(products);
             return ResponseEntity.ok(Collections.singletonMap("payload", EncryptionUtil.encrypt(json)));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
@@ -50,7 +51,7 @@ public class ProductApi {
     public ResponseEntity<Map<String, String>> getProductById(@PathVariable Long id) {
         try {
             ProductResponse product = productService.getProductById(id);
-            String json = new ObjectMapper().writeValueAsString(product);
+            String json = objectMapper.writeValueAsString(product);
             return ResponseEntity.ok(Collections.singletonMap("payload", EncryptionUtil.encrypt(json)));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));

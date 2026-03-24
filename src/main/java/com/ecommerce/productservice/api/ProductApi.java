@@ -10,6 +10,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Collections;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ecommerce.productservice.utils.EncryptionUtil;
 
 @RestController
 @RequestMapping("/api/products")
@@ -19,23 +23,38 @@ public class ProductApi {
     private final ProductService productService;
 
     @PostMapping("/create-product")
-    @ResponseStatus(HttpStatus.CREATED)
-    public String createProduct(@RequestBody Product product) {
-        productService.createProduct(product);
-        return "Product created successfully";
+    public ResponseEntity<Map<String, String>> createProduct(@RequestBody Map<String, String> request) {
+        try {
+            String decrypted = EncryptionUtil.decrypt(request.get("payload"));
+            Product product = new ObjectMapper().readValue(decrypted, Product.class);
+            productService.createProduct(product);
+            String successMsg = new ObjectMapper().writeValueAsString(Collections.singletonMap("message", "Product created successfully"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(Collections.singletonMap("payload", EncryptionUtil.encrypt(successMsg)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+        }
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<Map<String, String>> getAllProducts() {
+        try {
+            List<Product> products = productService.getAllProducts();
+            String json = new ObjectMapper().writeValueAsString(products);
+            return ResponseEntity.ok(Collections.singletonMap("payload", EncryptionUtil.encrypt(json)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
-        // Giả sử lấy từ DB, ở đây mình new cứng để test kết nối trước
-        ProductResponse product = productService.getProductById(id);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<Map<String, String>> getProductById(@PathVariable Long id) {
+        try {
+            ProductResponse product = productService.getProductById(id);
+            String json = new ObjectMapper().writeValueAsString(product);
+            return ResponseEntity.ok(Collections.singletonMap("payload", EncryptionUtil.encrypt(json)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Collections.singletonMap("message", e.getMessage()));
+        }
     }
 
     @PutMapping("/reduce-quantity/{id}")

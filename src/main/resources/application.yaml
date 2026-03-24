@@ -2,6 +2,8 @@ server:
   port: 8081 # Chạy port này để tránh đụng Gateway 8080
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: product-service
 
